@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Param, ParseIntPipe } from '@nestjs/common';
 import { TripsService } from './trips.service';
 import { Trip } from './trip.entity';
 import { CreateTripDto } from './dto/create-trip.dto';
@@ -22,4 +22,10 @@ export class TripsController {
     await this.tripsService.seedTrips();
     return { message: 'Trips created based on routes.' };
   }
+
+    @Get('by-route/:routeId')
+  findByRoute(@Param('routeId', ParseIntPipe) routeId: number) {
+    return this.tripsService.findByRoute(routeId);
+  }
+
 }

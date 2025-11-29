@@ -57,4 +57,13 @@ export class TripsService {
 
     await this.tripsRepository.save(demoTrips);
   }
+
+  async findByRoute(routeId: number): Promise<Trip[]> {
+  return this.tripsRepository.find({
+    where: { route: { id: routeId } },
+    relations: ['route'],
+    order: { time: 'ASC' },
+  });
+}
+
 }

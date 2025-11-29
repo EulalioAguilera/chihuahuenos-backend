@@ -59,4 +59,9 @@ export class RoutesService {
     const routes = this.routesRepository.create(defaults);
     await this.routesRepository.save(routes);
   }
+
+  async findOne(id: number) {
+  return this.routesRepository.findOne({ where: { id } });
+}
+
 }
