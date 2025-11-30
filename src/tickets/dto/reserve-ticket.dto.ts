@@ -1,12 +1,12 @@
-import { IsNumber } from 'class-validator';
+import { IsEmail, IsNumber, IsString } from 'class-validator';
 
 export class ReserveTicketDto {
   @IsNumber()
-  tripId: number;
+  ticketId: number;
 
-  @IsNumber()
-  seatNumber: number;
+  @IsString()
+  userName: string;
 
-  @IsNumber()
-  userId: number;
+  @IsEmail()
+  userEmail: string;
 }

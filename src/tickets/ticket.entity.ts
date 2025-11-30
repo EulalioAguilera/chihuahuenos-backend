@@ -40,4 +40,8 @@ export class Ticket {
 
   @Column({ type: 'timestamptz', nullable: true })
   reservedAt: Date | null;
+
+  @Column({ type: 'varchar', nullable: true })
+boardingCode: string | null;
+
 }

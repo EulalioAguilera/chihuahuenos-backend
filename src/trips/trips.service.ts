@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Trip } from './trip.entity';
 import { Route } from 'src/routes/route.entity';
 import { CreateTripDto } from './dto/create-trip.dto';
+import { TicketsService } from 'src/tickets/tickets.service';
 
 @Injectable()
 export class TripsService {
@@ -12,7 +13,10 @@ export class TripsService {
     private readonly tripsRepository: Repository<Trip>,
     @InjectRepository(Route)
     private readonly routesRepository: Repository<Route>,
+
+    private readonly ticketsService: TicketsService, // 👈 nuevo
   ) {}
+
 
   findAll(): Promise<Trip[]> {
     return this.tripsRepository.find({
@@ -21,23 +25,30 @@ export class TripsService {
   }
 
   async create(data: CreateTripDto): Promise<Trip> {
-    const route = await this.routesRepository.findOne({
-      where: { id: data.routeId },
-    });
+  const route = await this.routesRepository.findOne({
+    where: { id: data.routeId },
+  });
 
-    if (!route) {
-      throw new NotFoundException('Route not found');
-    }
-
-    const trip = this.tripsRepository.create({
-      date: data.date,
-      time: data.time,
-      capacity: data.capacity,
-      route: route,
-    });
-
-    return this.tripsRepository.save(trip);
+  if (!route) {
+    throw new NotFoundException('Route not found');
   }
+
+  const trip = this.tripsRepository.create({
+    date: data.date,
+    time: data.time,
+    capacity: data.capacity,
+    route: route,
+  });
+
+  // 1) Guardamos el viaje
+  const savedTrip = await this.tripsRepository.save(trip);
+
+  // 2) En cuanto exista, generamos sus asientos
+  await this.ticketsService.seedTicketsForTrip(savedTrip.id);
+
+  return savedTrip;
+}
+
 
   // Semillas de ejemplo
   async seedTrips(): Promise<void> {
